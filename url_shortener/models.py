@@ -12,7 +12,7 @@ class BaseInfo(models.Model):
 
 class Url(BaseInfo):
     long_version = models.URLField()
-    short_version = models.CharField(unique=True)
+    short_version = models.CharField(max_length=155, unique=True)
     re_path = models.CharField(max_length=100, blank=True, default=None)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='urls')
     redirect_count = models.PositiveBigIntegerField(blank=True, default=0)

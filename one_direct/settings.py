@@ -36,6 +36,9 @@ INSTALLED_APPS = [
     'url_shortener.apps.UrlShortenerConfig',
     'analytics.apps.AnalyticsConfig',
 
+    # 3rd party
+    'django_user_agents',
+
 ]
 
 MIDDLEWARE = [
@@ -46,6 +49,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # 3rd party
+    'django_user_agents.middleware.UserAgentMiddleware',
 ]
 
 ROOT_URLCONF = 'one_direct.urls'
@@ -161,3 +167,6 @@ REST_FRAMEWORK = {
 
 # EMAIL BACKEND
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# AGENT PARSER
+USER_AGENTS_CACHE = 'default'

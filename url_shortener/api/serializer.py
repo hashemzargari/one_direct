@@ -4,6 +4,7 @@ from url_shortener import models
 
 class UrlSerializer(serializers.ModelSerializer):
     redirect_count = serializers.IntegerField(read_only=True)
+    short_version = serializers.CharField(read_only=True)
 
     class Meta:
         model = models.Url

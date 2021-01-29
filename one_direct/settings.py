@@ -31,6 +31,11 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',  # drf token
     'drf_yasg',  # document
 
+    # local
+    'accounts.apps.AccountsConfig',
+    'url_shortener.apps.UrlShortenerConfig',
+    'analytics.apps.AnalyticsConfig',
+
 ]
 
 MIDDLEWARE = [

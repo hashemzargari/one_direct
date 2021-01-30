@@ -4,7 +4,7 @@
 2-3 createsuperuser
 3- run celery worker -> " celery -A one_direct worker -l info "
 4- use documents -> you can access to docs -> "127.0.0.1:8000/doc or 127.0.0.1:8000/redoc"
-
+5- locust -f locustfile.py
 
 NOTE: I had little time and the user and analytics sections were not written clean or is incomplete.
 Also, to improve the work, the main structure of Redis(cache) can be changed.

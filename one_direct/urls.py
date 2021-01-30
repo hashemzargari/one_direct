@@ -6,6 +6,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 from url_shortener.api import views as api_view
+from analytics.api.views import visited_link_analytics
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -29,6 +30,7 @@ urlpatterns = [
 
     # api endpoints
     path('api/v1/', include('url_shortener.api.urls')),
+    path('api/v1/analytics/<str:url>', visited_link_analytics),
 
     # documents
     re_path(r'^doc(?P<format>\.json|\.yaml)$',
@@ -37,4 +39,7 @@ urlpatterns = [
          name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0),
          name='schema-redoc'),
+
+    # accounts
+    path("api-auth/", include("rest_framework.urls")),
 ]

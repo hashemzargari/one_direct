@@ -1,4 +1,4 @@
-from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
+from rest_framework.permissions import BasePermission
 
 
 class IsOwnerOrForbidden(BasePermission):

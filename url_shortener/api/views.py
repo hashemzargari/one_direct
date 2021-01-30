@@ -1,12 +1,13 @@
 from django.http import HttpResponseRedirect
 from django.core.cache import cache
-from rest_framework import viewsets, generics, status, permissions
+from django.utils import timezone
+from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from .serializer import UrlSerializer, VisitUrlSerializer
+from .serializer import UrlSerializer
 from .permissions import IsOwnerOrForbidden
-from url_shortener.models import Url, VisitUrl
+from url_shortener.models import Url
 from url_shortener.utils.url_shortner import make_shorten, check_uniq
 from url_shortener.utils.validators import url_validator
 from url_shortener.api import tasks
@@ -58,10 +59,17 @@ class UrlCreateApiView(generics.CreateAPIView):
         return Response(data={'short_version': short_version}, status=status.HTTP_201_CREATED)
 
 
-@api_view()  # only get method
+@api_view(['GET'])
 def redirect_client(request, short_version):
     # read long_url from redis and check exist
     _long_version = cache.get(short_version)
+
+    # if cache missed
+    if _long_version is None:
+        # we want handle response, rather than get_object_or_404
+        _url_ = Url.objects.filter(short_version=short_version)
+        if _url_.count() > 0:
+            _long_version = _url_.first().long_version
 
     if _long_version is not None:
         # get client info
@@ -88,16 +96,20 @@ def redirect_client(request, short_version):
 
         # add client info to redis for analytics
 
-        _cache_name = str(_long_version) + '_visited'
+        _cache_name = str(short_version) + '_visited'
         _old_clients = cache.get(_cache_name)
         if not _old_clients:
-            _old_clients = set()
-        _old_clients.update([(user_ip, user_browser, user_device)])
+            _old_clients = []
+        _old_clients += [
+            {str(timezone.now()):
+                 {'user_ip': user_ip,
+                  'user_browser': user_browser,
+                  'user_device': user_device}}]
         cache.set(_cache_name, _old_clients, None)
 
         # increment count in redis
 
-        _cache_name_count = str(_long_version) + '_visited_count'
+        _cache_name_count = str(short_version) + '_visited_count'
         _old_clients_count = cache.get(_cache_name_count)
         if not _old_clients_count:
             _old_clients_count = 0

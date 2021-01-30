@@ -10,7 +10,7 @@ def add_url_to_db(long_version, short_version, re_path, user):
 
 
 @shared_task
-def add_visit_url(url, client_browser, client_device, client_ip):
-    url = Url.objects.filter(url=url).first()
+def add_visit_url(short_version, client_browser, client_device, client_ip):
+    url = Url.objects.filter(short_version=str(short_version)).first()
     VisitUrl.objects.create(url=url, client_browser=client_browser,
                             client_device=client_device, client_ip=client_ip)

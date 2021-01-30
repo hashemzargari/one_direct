@@ -37,8 +37,9 @@ class VisitUrl(BaseInfo):
 
     def save(self, *args, **kwargs):
         # first everything saved in cache and then save to database !
-        _url = Url.objects.filter(short_version=self.url).first()
-        visit_count = VisitUrl.objects.filter(url=self.url).count()
-        _url.redirect_count = visit_count + 1
-        _url.save()
+        _url = Url.objects.filter(long_version=self.url).first()
+        if _url:
+            visit_count = VisitUrl.objects.filter(url=self.url).count()
+            _url.redirect_count = visit_count + 1
+            _url.save()
         super().save(*args, **kwargs)

@@ -49,8 +49,8 @@ class UrlCreateApiView(generics.CreateAPIView):
         while not check_uniq(short_version):
             short_version = make_shorten(try_slug=try_slug + 1)
         # add url to redis
-        cache.set(_long_version, short_version)
-        cache.set(short_version, _long_version)
+        cache.set(_long_version, short_version, None)
+        cache.set(short_version, _long_version, None)
         # task to save url in db
         tasks.add_url_to_db.delay(long_version=_long_version, short_version=short_version, re_path=_re_path,
                                   user=request.user.id)
@@ -93,7 +93,7 @@ def redirect_client(request, short_version):
         if not _old_clients:
             _old_clients = set()
         _old_clients.update([(user_ip, user_browser, user_device)])
-        cache.set(_cache_name, _old_clients)
+        cache.set(_cache_name, _old_clients, None)
 
         # increment count in redis
 
@@ -102,11 +102,11 @@ def redirect_client(request, short_version):
         if not _old_clients_count:
             _old_clients_count = 0
         _old_clients_count = int(_old_clients_count)
-        cache.set(_cache_name_count, _old_clients_count + 1)
+        cache.set(_cache_name_count, _old_clients_count + 1, None)
 
         # task to add client info to db and automated increment with save method in model
 
-        tasks.add_visit_url.delay(url=_long_version, client_browser=str(user_browser),
+        tasks.add_visit_url.delay(short_version=str(short_version), client_browser=str(user_browser),
                                   client_device=str(user_device), client_ip=str(user_ip))
 
         # redirect user
